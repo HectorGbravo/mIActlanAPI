@@ -4,14 +4,16 @@ using MiactlanAPI.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MiactlanAPI.Migrations
 {
     [DbContext(typeof(MiactlanDbContext))]
-    partial class MiactlanDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201107060857_Se agregaron Entidades")]
+    partial class SeagregaronEntidades
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,46 +67,6 @@ namespace MiactlanAPI.Migrations
                     b.HasKey("IdEntidad");
 
                     b.ToTable("Entidades");
-                });
-
-            modelBuilder.Entity("MiactlanAPI.Entities.Entrada", b =>
-                {
-                    b.Property<int>("IdEntrada")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<long?>("CategoriaIdCategoria")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("EntidadIdEntidad")
-                        .HasColumnType("int");
-
-                    b.Property<long>("IdCategoria")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("IdEntidad")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Texto")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Titulo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("IdEntrada");
-
-                    b.HasIndex("CategoriaIdCategoria");
-
-                    b.HasIndex("EntidadIdEntidad");
-
-                    b.ToTable("Entradas");
                 });
 
             modelBuilder.Entity("MiactlanAPI.Entities.Usuario", b =>
@@ -313,17 +275,6 @@ namespace MiactlanAPI.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
-                });
-
-            modelBuilder.Entity("MiactlanAPI.Entities.Entrada", b =>
-                {
-                    b.HasOne("MiactlanAPI.Entities.Categoria", "Categoria")
-                        .WithMany("EntradasLista")
-                        .HasForeignKey("CategoriaIdCategoria");
-
-                    b.HasOne("MiactlanAPI.Entities.Entidad", "Entidad")
-                        .WithMany("EntradasLista")
-                        .HasForeignKey("EntidadIdEntidad");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
