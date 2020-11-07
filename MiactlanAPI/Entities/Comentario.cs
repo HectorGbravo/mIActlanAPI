@@ -6,16 +6,15 @@ using System.Threading.Tasks;
 
 namespace MiactlanAPI.Entities
 {
-    public class Categoria
+    public class Comentario
     {
         [Key]
-        public long IdCategoria { get; set; }
-        public string Nombre { get; set; }
-        public string Descripcion { get; set; }
+        public int IdComentario { get; set; }
+        public int IdEntrada { get; set; }
+        public Entrada Entrada { get; set; }
+        public string Titulo { get; set; }
+        public string Texto { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public ICollection<Entrada> EntradasLista { get; set; }
-        public ICollection<EntradaCategoria> EntradaLink { get; set; }
-
     }
 }

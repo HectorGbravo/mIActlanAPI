@@ -20,5 +20,8 @@ namespace MiactlanAPI.Context
         public DbSet<Categoria> Categorias { get; set; }
         public DbSet<Entidad> Entidades { get; set; }
         public DbSet<Entrada> Entradas { get; set; }
+        public DbSet<Like> Likes { get; set; }
+        public DbSet<Comentario> Comentarios { get; set; }
+        public DbSet<EntradaCategoria> EntradaCategorias { get; set; }
     }
 }

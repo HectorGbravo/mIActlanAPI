@@ -18,5 +18,9 @@ namespace MiactlanAPI.Entities
         public Entidad Entidad { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public ICollection<Like> LikesLista { get; set; }
+        public ICollection<Comentario> ComentariosLista { get; set; }
+        public ICollection<EntradaCategoria> CategoriasLink { get; set; }
+
     }
 }

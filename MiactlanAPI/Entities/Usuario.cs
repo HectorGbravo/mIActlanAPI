@@ -13,5 +13,7 @@ namespace MiactlanAPI.Entities
         public string Apellido { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public ICollection<Like> LikesLista { get; set; }
+
     }
 }
