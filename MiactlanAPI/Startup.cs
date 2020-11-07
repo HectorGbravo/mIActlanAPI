@@ -32,7 +32,7 @@ namespace MiactlanAPI
             services.ConfigureCors();
 
             services.AddDbContext<MiactlanDbContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("SQLAZURECONNSTR_mIActlanDB")));
+            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddControllers();
             AddSwagger(services);
