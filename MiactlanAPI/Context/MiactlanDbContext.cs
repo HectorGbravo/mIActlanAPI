@@ -10,5 +10,13 @@ namespace MiactlanAPI.Context
         public MiactlanDbContext(DbContextOptions<MiactlanDbContext> options) : base(options)
         {
         }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+        }
+
+        public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Categoria> Categorias { get; set; }
     }
 }
