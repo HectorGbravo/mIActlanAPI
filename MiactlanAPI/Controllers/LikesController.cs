@@ -80,10 +80,23 @@ namespace MiactlanAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Like>> PostLike(Like like)
         {
-            _context.Likes.Add(like);
-            await _context.SaveChangesAsync();
+            var likeExistente = await _context.Likes.Where(x => x.IdUsuario == like.IdUsuario && x.IdEntrada == like.IdEntrada).FirstOrDefaultAsync();
 
-            return CreatedAtAction("GetLike", new { id = like.IdLike }, like);
+            if (likeExistente == null)
+            {
+                _context.Likes.Add(like);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetLike", new { id = like.IdLike }, like);
+            } else
+            {
+                _context.Likes.Remove(likeExistente);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+            }
+
+            
         }
 
         // DELETE: api/Likes/5

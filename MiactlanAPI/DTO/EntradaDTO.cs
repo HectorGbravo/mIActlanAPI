@@ -17,6 +17,6 @@ namespace MiactlanAPI.DTO
         public DateTime UpdatedAt { get; set; }
         public bool IsLiked { get; set; }
         public List<Categoria> Categorias { get; set; }
-        public List<Archivo> Archivos { get; set; }
+        public List<ArchivoDTO> Archivos { get; set; }
     }
 }

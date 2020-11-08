@@ -15,6 +15,8 @@ namespace MiactlanAPI.Services
             CreateMap<Usuario, UsuarioDTO>();
             CreateMap<Entidad, EntidadDTO>();
             CreateMap<Estado, EstadoDTO>();
+            CreateMap<Archivo, ArchivoDTO>()
+                .ForMember(x => x.CategoriaArchivos, y => y.MapFrom(z => z.CategoriasLink.Select(a => a.CategoriaArchivo).ToList()));
             CreateMap<Entrada, EntradaDTO>()
                 .ForMember(x => x.Categorias, y => y.MapFrom(z => z.CategoriasLink.Select(a => a.Categoria).ToList()));
         }

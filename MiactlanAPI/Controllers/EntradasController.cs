@@ -50,15 +50,19 @@ namespace MiactlanAPI.Controllers
             var entradas = await _context.Entradas
                 .Include(x => x.Usuario)
                 .Include(x => x.Entidad)
+                .Include(x => x.ArchivosLink)
                 .Include(x => x.CategoriasLink)
                 .ThenInclude(x => x.Categoria)
                 .ToListAsync();
             var entradasDTO = _mapper.Map<List<EntradaDTO>>(entradas);
             foreach(EntradaDTO entradaDTO in entradasDTO) {
+                var archivos = await _context.Archivos.Where(x => x.IdEntrada == entradaDTO.IdEntrada).Include(x => x.CategoriasLink).ThenInclude(y => y.CategoriaArchivo).ToListAsync();
+                var archivosDTO = _mapper.Map<List<ArchivoDTO>>(archivos);
                 if (usuarioLike.Where(x => x.IdEntrada == entradaDTO.IdEntrada && x.IdUsuario == entradaDTO.usuario.id).FirstOrDefault() != null)
                 {
                     entradaDTO.IsLiked = true;
                 }
+                entradaDTO.Archivos = archivosDTO;
             }
             return entradasDTO;
         }
@@ -78,10 +82,13 @@ namespace MiactlanAPI.Controllers
             var entradasDTO = _mapper.Map<List<EntradaDTO>>(entradas);
             foreach (EntradaDTO entradaDTO in entradasDTO)
             {
+                var archivos = await _context.Archivos.Where(x => x.IdEntrada == entradaDTO.IdEntrada).Include(x => x.CategoriasLink).ThenInclude(y => y.CategoriaArchivo).ToListAsync();
+                var archivosDTO = _mapper.Map<List<ArchivoDTO>>(archivos);
                 if (usuarioLike.Where(x => x.IdEntrada == entradaDTO.IdEntrada && x.IdUsuario == entradaDTO.usuario.id).FirstOrDefault() != null)
                 {
                     entradaDTO.IsLiked = true;
                 }
+                entradaDTO.Archivos = archivosDTO;
             }
             return entradasDTO;
         }
@@ -101,10 +108,13 @@ namespace MiactlanAPI.Controllers
             var entradasDTO = _mapper.Map<List<EntradaDTO>>(entradas);
             foreach (EntradaDTO entradaDTO in entradasDTO)
             {
+                var archivos = await _context.Archivos.Where(x => x.IdEntrada == entradaDTO.IdEntrada).Include(x => x.CategoriasLink).ThenInclude(y => y.CategoriaArchivo).ToListAsync();
+                var archivosDTO = _mapper.Map<List<ArchivoDTO>>(archivos);
                 if (usuarioLike.Where(x => x.IdEntrada == entradaDTO.IdEntrada && x.IdUsuario == entradaDTO.usuario.id).FirstOrDefault() != null)
                 {
                     entradaDTO.IsLiked = true;
                 }
+                entradaDTO.Archivos = archivosDTO;
             }
             return entradasDTO.Where(x => x.IsLiked == true).ToList();
         }
