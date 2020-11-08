@@ -12,48 +12,48 @@ namespace MiactlanAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ComentariosController : ControllerBase
+    public class EstadosController : ControllerBase
     {
         private readonly MiactlanDbContext _context;
 
-        public ComentariosController(MiactlanDbContext context)
+        public EstadosController(MiactlanDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/Comentarios
+        // GET: api/Estados
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Comentario>>> GetComentarios()
+        public async Task<ActionResult<IEnumerable<Estado>>> GetEstados()
         {
-            return await _context.Comentarios.ToListAsync();
+            return await _context.Estado.ToListAsync();
         }
 
-        // GET: api/Comentarios/5
+        // GET: api/Estados/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Comentario>> GetComentario(int id)
+        public async Task<ActionResult<Estado>> GetEstado(int id)
         {
-            var comentario = await _context.Comentarios.FindAsync(id);
+            var estado = await _context.Estado.FindAsync(id);
 
-            if (comentario == null)
+            if (estado == null)
             {
                 return NotFound();
             }
 
-            return comentario;
+            return estado;
         }
 
-        // PUT: api/Comentarios/5
+        // PUT: api/Estados/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutComentario(int id, Comentario comentario)
+        public async Task<IActionResult> PutEstado(int id, Estado estado)
         {
-            if (id != comentario.IdComentario)
+            if (id != estado.IdEstado)
             {
                 return BadRequest();
             }
-            comentario.UpdatedAt = DateTime.Now;
-            _context.Entry(comentario).State = EntityState.Modified;
+            estado.UpdatedAt = DateTime.Now;
+            _context.Entry(estado).State = EntityState.Modified;
 
             try
             {
@@ -61,7 +61,7 @@ namespace MiactlanAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ComentarioExists(id))
+                if (!EstadoExists(id))
                 {
                     return NotFound();
                 }
@@ -74,39 +74,39 @@ namespace MiactlanAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/Comentarios
+        // POST: api/Estados
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Comentario>> PostComentario(Comentario comentario)
+        public async Task<ActionResult<Estado>> PostEstado(Estado estado)
         {
-            comentario.CreatedAt = DateTime.Now;
-            comentario.UpdatedAt = DateTime.Now;
-            _context.Comentarios.Add(comentario);
+            estado.CreatedAt = DateTime.Now;
+            estado.UpdatedAt = DateTime.Now;
+            _context.Estado.Add(estado);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetComentario", new { id = comentario.IdComentario }, comentario);
+            return CreatedAtAction("GetEstado", new { id = estado.IdEstado }, estado);
         }
 
-        // DELETE: api/Comentarios/5
+        // DELETE: api/Estados/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Comentario>> DeleteComentario(int id)
+        public async Task<ActionResult<Estado>> DeleteEstado(int id)
         {
-            var comentario = await _context.Comentarios.FindAsync(id);
-            if (comentario == null)
+            var estado = await _context.Estado.FindAsync(id);
+            if (estado == null)
             {
                 return NotFound();
             }
 
-            _context.Comentarios.Remove(comentario);
+            _context.Estado.Remove(estado);
             await _context.SaveChangesAsync();
 
-            return comentario;
+            return estado;
         }
 
-        private bool ComentarioExists(int id)
+        private bool EstadoExists(int id)
         {
-            return _context.Comentarios.Any(e => e.IdComentario == id);
+            return _context.Estado.Any(e => e.IdEstado == id);
         }
     }
 }

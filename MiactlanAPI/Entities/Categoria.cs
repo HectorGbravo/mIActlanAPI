@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -9,12 +10,12 @@ namespace MiactlanAPI.Entities
     public class Categoria
     {
         [Key]
-        public long IdCategoria { get; set; }
+        public int IdCategoria { get; set; }
         public string Nombre { get; set; }
         public string Descripcion { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public ICollection<Entrada> EntradasLista { get; set; }
+        [JsonIgnore]
         public ICollection<EntradaCategoria> EntradaLink { get; set; }
 
     }

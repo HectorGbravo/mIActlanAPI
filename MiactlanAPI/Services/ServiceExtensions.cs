@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using AutoMapper;
+
 
 namespace MiactlanAPI.Services
 {
@@ -15,8 +17,7 @@ namespace MiactlanAPI.Services
         {
             services.AddCors(options =>
             {
-                options.AddPolicy(
-                    "CorsPolicy",
+                options.AddDefaultPolicy(
                     builder => builder.AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader());
@@ -40,6 +41,11 @@ namespace MiactlanAPI.Services
         public static void ConfigureClock(this IServiceCollection services)
         {
             services.TryAddSingleton<ISystemClock, SystemClock>();
+        }
+
+        public static void ConfigureAutoMapper(this IServiceCollection services)
+        {
+            services.AddAutoMapper(typeof(Startup));
         }
     }
 }

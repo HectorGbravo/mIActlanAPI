@@ -52,7 +52,7 @@ namespace MiactlanAPI.Controllers
             {
                 return BadRequest();
             }
-
+            entidad.UpdatedAt = DateTime.Now;
             _context.Entry(entidad).State = EntityState.Modified;
 
             try
@@ -80,6 +80,8 @@ namespace MiactlanAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Entidad>> PostEntidad(Entidad entidad)
         {
+            entidad.CreatedAt = DateTime.Now;
+            entidad.UpdatedAt = DateTime.Now;
             _context.Entidades.Add(entidad);
             await _context.SaveChangesAsync();
 

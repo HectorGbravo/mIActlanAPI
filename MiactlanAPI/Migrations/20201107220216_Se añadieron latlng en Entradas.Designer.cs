@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MiactlanAPI.Migrations
 {
     [DbContext(typeof(MiactlanDbContext))]
-    [Migration("20201107061333_Se agregaron Entradas")]
-    partial class SeagregaronEntradas
+    [Migration("20201107220216_Se añadieron latlng en Entradas")]
+    partial class SeañadieronlatlngenEntradas
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,9 +23,9 @@ namespace MiactlanAPI.Migrations
 
             modelBuilder.Entity("MiactlanAPI.Entities.Categoria", b =>
                 {
-                    b.Property<long>("IdCategoria")
+                    b.Property<int>("IdCategoria")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("CreatedAt")
@@ -45,6 +45,35 @@ namespace MiactlanAPI.Migrations
                     b.ToTable("Categorias");
                 });
 
+            modelBuilder.Entity("MiactlanAPI.Entities.Comentario", b =>
+                {
+                    b.Property<int>("IdComentario")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IdEntrada")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Texto")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Titulo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("IdComentario");
+
+                    b.HasIndex("IdEntrada");
+
+                    b.ToTable("Comentarios");
+                });
+
             modelBuilder.Entity("MiactlanAPI.Entities.Entidad", b =>
                 {
                     b.Property<int>("IdEntidad")
@@ -58,6 +87,15 @@ namespace MiactlanAPI.Migrations
                     b.Property<string>("Descripcion")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("IdEstado")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LatCentral")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LngCentral")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Nombre")
                         .HasColumnType("nvarchar(max)");
 
@@ -65,6 +103,8 @@ namespace MiactlanAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("IdEntidad");
+
+                    b.HasIndex("IdEstado");
 
                     b.ToTable("Entidades");
                 });
@@ -76,20 +116,20 @@ namespace MiactlanAPI.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<long?>("CategoriaIdCategoria")
-                        .HasColumnType("bigint");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("EntidadIdEntidad")
-                        .HasColumnType("int");
-
-                    b.Property<long>("IdCategoria")
-                        .HasColumnType("bigint");
-
                     b.Property<int>("IdEntidad")
                         .HasColumnType("int");
+
+                    b.Property<string>("IdUsuario")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("LatOrigen")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LngOrigen")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Texto")
                         .HasColumnType("nvarchar(max)");
@@ -102,11 +142,76 @@ namespace MiactlanAPI.Migrations
 
                     b.HasKey("IdEntrada");
 
-                    b.HasIndex("CategoriaIdCategoria");
+                    b.HasIndex("IdEntidad");
 
-                    b.HasIndex("EntidadIdEntidad");
+                    b.HasIndex("IdUsuario");
 
                     b.ToTable("Entradas");
+                });
+
+            modelBuilder.Entity("MiactlanAPI.Entities.EntradaCategoria", b =>
+                {
+                    b.Property<int>("IdEntradaCategoria")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("IdCategoria")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdEntrada")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdEntradaCategoria");
+
+                    b.HasIndex("IdCategoria");
+
+                    b.HasIndex("IdEntrada");
+
+                    b.ToTable("EntradaCategorias");
+                });
+
+            modelBuilder.Entity("MiactlanAPI.Entities.Estado", b =>
+                {
+                    b.Property<int>("IdEstado")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Nombre")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("IdEstado");
+
+                    b.ToTable("Estado");
+                });
+
+            modelBuilder.Entity("MiactlanAPI.Entities.Like", b =>
+                {
+                    b.Property<int>("IdLike")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("IdEntrada")
+                        .HasColumnType("int");
+
+                    b.Property<string>("IdUsuario")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("IdLike");
+
+                    b.HasIndex("IdEntrada");
+
+                    b.HasIndex("IdUsuario");
+
+                    b.ToTable("Likes");
                 });
 
             modelBuilder.Entity("MiactlanAPI.Entities.Usuario", b =>
@@ -317,15 +422,63 @@ namespace MiactlanAPI.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("MiactlanAPI.Entities.Comentario", b =>
+                {
+                    b.HasOne("MiactlanAPI.Entities.Entrada", "Entrada")
+                        .WithMany("ComentariosLista")
+                        .HasForeignKey("IdEntrada")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("MiactlanAPI.Entities.Entidad", b =>
+                {
+                    b.HasOne("MiactlanAPI.Entities.Estado", "Estado")
+                        .WithMany("EntidadesLista")
+                        .HasForeignKey("IdEstado")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("MiactlanAPI.Entities.Entrada", b =>
                 {
-                    b.HasOne("MiactlanAPI.Entities.Categoria", "Categoria")
-                        .WithMany("EntradasLista")
-                        .HasForeignKey("CategoriaIdCategoria");
-
                     b.HasOne("MiactlanAPI.Entities.Entidad", "Entidad")
                         .WithMany("EntradasLista")
-                        .HasForeignKey("EntidadIdEntidad");
+                        .HasForeignKey("IdEntidad")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MiactlanAPI.Entities.Usuario", "Usuario")
+                        .WithMany("EntradasLista")
+                        .HasForeignKey("IdUsuario");
+                });
+
+            modelBuilder.Entity("MiactlanAPI.Entities.EntradaCategoria", b =>
+                {
+                    b.HasOne("MiactlanAPI.Entities.Categoria", "Categoria")
+                        .WithMany("EntradaLink")
+                        .HasForeignKey("IdCategoria")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MiactlanAPI.Entities.Entrada", "Entrada")
+                        .WithMany("CategoriasLink")
+                        .HasForeignKey("IdEntrada")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("MiactlanAPI.Entities.Like", b =>
+                {
+                    b.HasOne("MiactlanAPI.Entities.Entrada", "Entrada")
+                        .WithMany("LikesLista")
+                        .HasForeignKey("IdEntrada")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MiactlanAPI.Entities.Usuario", "Usuario")
+                        .WithMany("LikesLista")
+                        .HasForeignKey("IdUsuario");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

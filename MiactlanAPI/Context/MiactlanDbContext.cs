@@ -18,6 +18,7 @@ namespace MiactlanAPI.Context
 
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Categoria> Categorias { get; set; }
+        public DbSet<Estado> Estado { get; set; }
         public DbSet<Entidad> Entidades { get; set; }
         public DbSet<Entrada> Entradas { get; set; }
         public DbSet<Like> Likes { get; set; }

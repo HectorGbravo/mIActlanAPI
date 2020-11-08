@@ -33,7 +33,6 @@ namespace MiactlanAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.ConfigureCors();
 
             services.ConfigureDatabase(Configuration);
 
@@ -41,7 +40,14 @@ namespace MiactlanAPI
 
             services.ConfigureClock();
 
-            services.AddControllers();
+            services.AddControllers()
+                .AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            
+            services.ConfigureCors();
+
+            services.ConfigureAutoMapper();
+            
             AddSwagger(services);
         }
 
@@ -62,6 +68,8 @@ namespace MiactlanAPI
             });
 
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthorization();
 
