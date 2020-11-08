@@ -1,5 +1,7 @@
 ﻿using MiactlanAPI.Context;
+using MiactlanAPI.DTO;
 using MiactlanAPI.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,11 +18,40 @@ namespace MiactlanAPI.Controllers
     {
         private readonly MiactlanDbContext _context;
         private readonly UserManager<Usuario> _userManager;
+        private readonly SignInManager<Usuario> _signInManager;
 
-        public UsuariosController(MiactlanDbContext context, UserManager<Usuario> userManager)
+        public UsuariosController(MiactlanDbContext context, UserManager<Usuario> userManager, SignInManager<Usuario> signInManager)
         {
             this._context = context;
             this._userManager = userManager;
+            this._signInManager = signInManager;
+        }
+
+        [HttpPost("login")]
+        [AllowAnonymous]
+        public async Task<ActionResult<UsuarioData>> Login(UsuarioLoginDTO parametros)
+        {
+            var usuario = await this._userManager.FindByNameAsync(parametros.UserName);
+            if (usuario == null)
+            {
+                return BadRequest("Usuario no encontrado");
+            }
+
+            var resultado = await this._signInManager.CheckPasswordSignInAsync(usuario, parametros.Password, false);
+            if (resultado.Succeeded)
+            {
+                return new UsuarioData
+                {
+                    Nombre = usuario.Nombre,
+                    UserName = usuario.UserName,
+                    Email = usuario.Email,
+                    IdUsuario = usuario.Id,
+                    Apellido = usuario.Apellido
+                };
+            } else
+            {
+                return BadRequest("Contraseña incorrecta");
+            }
         }
 
         [HttpPost("registrar")]

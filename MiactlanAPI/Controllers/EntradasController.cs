@@ -94,6 +94,7 @@ namespace MiactlanAPI.Controllers
             var entradas = await _context.Entradas
                 .Include(x => x.Usuario)
                 .Include(x => x.Entidad)
+                .Include(x => x.ArchivosLink)
                 .Include(x => x.CategoriasLink)
                 .ThenInclude(x => x.Categoria)
                 .ToListAsync();
@@ -252,101 +253,110 @@ namespace MiactlanAPI.Controllers
         [Route("archivos/{id}")]
         public async Task<ActionResult> StoreFiles(int id,[FromForm] List<IFormFile> files)
         {
-            if (files == null || files.Count == 0)
+            try
             {
-                return BadRequest("Se deben incluir archivos");
-            }
-            BlobStorageService blobStorageService = new BlobStorageService(this.configuration);
-            bool negative = false;
-            foreach (IFormFile formFile in files)
-            {
-                var fileName = Path.GetFileName(formFile.FileName);
-                string mimeType = formFile.ContentType;
-                byte[] fileData;
-                using (var target = new MemoryStream())
+                if (files == null || files.Count == 0)
                 {
-                    formFile.CopyTo(target);
-                    fileData = target.ToArray();
+                    return BadRequest("Se deben incluir archivos");
                 }
-                string filePath = blobStorageService.UploadFileToBlob(formFile.FileName, fileData, mimeType);
-
-                DataRepresentationApi dataRepresentationApi = new DataRepresentationApi();
-                dataRepresentationApi.DataRepresentation = "URL";
-                dataRepresentationApi.Value = filePath;
-                var jsonString = JsonConvert.SerializeObject(dataRepresentationApi);
-                var client = new HttpClient();
-                var queryString = HttpUtility.ParseQueryString(string.Empty);
-
-                // Request headers
-                client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "399faba124ec4fbfbef082c9f76267e3");
-                // Request parameters
-                queryString["enhanced"] = "true";
-                var uri = "https://miactlan.cognitiveservices.azure.com/contentmoderator/moderate/v1.0/ProcessImage/Evaluate?" + queryString;
-
-                HttpResponseMessage response;
-
-                response = await client.PostAsync(uri, new StringContent(jsonString, Encoding.UTF8, "application/json"));
-                var responseImagenText = await response.Content.ReadAsStringAsync();
-                var resultImagen = JsonConvert.DeserializeObject<ImageApiResponse>(responseImagenText);
-                if (resultImagen.IsImageAdultClassified == true ||
-                    resultImagen.AdultClassificationScore >= 0.9 ||
-                    resultImagen.IsImageRacyClassified == true ||
-                    resultImagen.RacyClassificationScore >= 0.9)
+                BlobStorageService blobStorageService = new BlobStorageService(this.configuration);
+                bool negative = false;
+                foreach (IFormFile formFile in files)
                 {
-                    blobStorageService.DeleteBlobData(filePath);
-                    negative = true;
-                }
-
-                Archivo archivo = new Archivo()
-                {
-                    IdEntrada = id,
-                    UrlArchivo = filePath,
-                    MimeType = mimeType
-                };
-
-                _context.Archivos.Add(archivo);
-
-                await _context.SaveChangesAsync();
-
-                var customVisionClient = new HttpClient();
-                customVisionClient.DefaultRequestHeaders.Add("Prediction-Key", "fa249ba3cc844f2287c23e5bf874d4ac");
-
-                var uriCustomVision = "https://southcentralus.api.cognitive.microsoft.com/customvision/v3.0/Prediction/85352c53-ff84-4fd0-b3ff-b6212f5257c3/classify/iterations/mIActlanCV/url";
-
-                CustomVisionRequest customVisionRequest = new CustomVisionRequest();
-                customVisionRequest.Url = filePath;
-                var jsonStringCV = JsonConvert.SerializeObject(customVisionRequest);
-
-                HttpResponseMessage responseCustom;
-
-                responseCustom = await customVisionClient.PostAsync(uriCustomVision, new StringContent(jsonStringCV, Encoding.UTF8, "application/json"));
-                var resultCustom = await responseCustom.Content.ReadAsStringAsync();
-                var resultadoCV = JsonConvert.DeserializeObject<CustomVisionResponse>(resultCustom);
-                foreach(Prediction prediction in resultadoCV.predictions)
-                {
-                    if (prediction.probability >= 0.9)
+                    var fileName = Path.GetFileName(formFile.FileName);
+                    string mimeType = formFile.ContentType;
+                    byte[] fileData;
+                    using (var target = new MemoryStream())
                     {
-                        var categoria = await _context.CategoriaArchivos.Where(x => x.CategoriaTagId == prediction.tagId).FirstOrDefaultAsync();
-                        if (categoria != null)
+                        formFile.CopyTo(target);
+                        fileData = target.ToArray();
+                    }
+                    string filePath = blobStorageService.UploadFileToBlob(formFile.FileName, fileData, mimeType);
+
+                    if (mimeType == "image/png" || mimeType == "image/jpeg" || mimeType == "image/jpg")
+                    {
+                        DataRepresentationApi dataRepresentationApi = new DataRepresentationApi();
+                        dataRepresentationApi.DataRepresentation = "URL";
+                        dataRepresentationApi.Value = filePath;
+                        var jsonString = JsonConvert.SerializeObject(dataRepresentationApi);
+                        var client = new HttpClient();
+                        var queryString = HttpUtility.ParseQueryString(string.Empty);
+
+                        // Request headers
+                        client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "399faba124ec4fbfbef082c9f76267e3");
+                        // Request parameters
+                        queryString["enhanced"] = "true";
+                        var uri = "https://miactlan.cognitiveservices.azure.com/contentmoderator/moderate/v1.0/ProcessImage/Evaluate?" + queryString;
+
+                        HttpResponseMessage response;
+
+                        response = await client.PostAsync(uri, new StringContent(jsonString, Encoding.UTF8, "application/json"));
+                        var responseImagenText = await response.Content.ReadAsStringAsync();
+                        var resultImagen = JsonConvert.DeserializeObject<ImageApiResponse>(responseImagenText);
+                        if (resultImagen.IsImageAdultClassified == true ||
+                            resultImagen.AdultClassificationScore >= 0.9 ||
+                            resultImagen.IsImageRacyClassified == true ||
+                            resultImagen.RacyClassificationScore >= 0.9)
                         {
-                            ArchivoCategoriaArchivo archivoCategoriaArchivo = new ArchivoCategoriaArchivo()
+                            blobStorageService.DeleteBlobData(filePath);
+                            negative = true;
+                        }
+
+                        Archivo archivo = new Archivo()
+                        {
+                            IdEntrada = id,
+                            UrlArchivo = filePath,
+                            MimeType = mimeType
+                        };
+
+                        _context.Archivos.Add(archivo);
+
+                        await _context.SaveChangesAsync();
+
+                        var customVisionClient = new HttpClient();
+                        customVisionClient.DefaultRequestHeaders.Add("Prediction-Key", "fa249ba3cc844f2287c23e5bf874d4ac");
+
+                        var uriCustomVision = "https://southcentralus.api.cognitive.microsoft.com/customvision/v3.0/Prediction/85352c53-ff84-4fd0-b3ff-b6212f5257c3/classify/iterations/mIActlanCV/url";
+
+                        CustomVisionRequest customVisionRequest = new CustomVisionRequest();
+                        customVisionRequest.Url = filePath;
+                        var jsonStringCV = JsonConvert.SerializeObject(customVisionRequest);
+
+                        HttpResponseMessage responseCustom;
+
+                        responseCustom = await customVisionClient.PostAsync(uriCustomVision, new StringContent(jsonStringCV, Encoding.UTF8, "application/json"));
+                        var resultCustom = await responseCustom.Content.ReadAsStringAsync();
+                        var resultadoCV = JsonConvert.DeserializeObject<CustomVisionResponse>(resultCustom);
+                        foreach (Prediction prediction in resultadoCV.predictions)
+                        {
+                            if (prediction.probability >= 0.9)
                             {
-                                IdArchivo = archivo.IdArchivo,
-                                IdCategoriaArchivo = categoria.IdCategoriaArchivo
-                            };
-                            _context.ArchivoCategoriaArchivos.Add(archivoCategoriaArchivo);
-                            await _context.SaveChangesAsync();
+                                var categoria = await _context.CategoriaArchivos.Where(x => x.CategoriaTagId == prediction.tagId).FirstOrDefaultAsync();
+                                if (categoria != null)
+                                {
+                                    ArchivoCategoriaArchivo archivoCategoriaArchivo = new ArchivoCategoriaArchivo()
+                                    {
+                                        IdArchivo = archivo.IdArchivo,
+                                        IdCategoriaArchivo = categoria.IdCategoriaArchivo
+                                    };
+                                    _context.ArchivoCategoriaArchivos.Add(archivoCategoriaArchivo);
+                                    await _context.SaveChangesAsync();
+                                }
+                            }
                         }
                     }
                 }
-            }
 
-            if ( negative == true )
+                if (negative == true)
+                {
+                    return Ok("Se encontraron archivos con contenido inadecuado. No se registraron");
+                }
+
+                return Ok("Los archivos han sido registrados");
+            } catch (Exception ex)
             {
-                return Ok("Se encontraron archivos con contenido inadecuado. No se registraron");
+                return BadRequest(ex.Message);
             }
-
-            return Ok("Los archivos han sido registrados");
         }
 
         // DELETE: api/Entradas/5
