@@ -27,6 +27,7 @@ namespace MiactlanAPI.Entities
         public ICollection<Like> LikesLista { get; set; }
         public ICollection<Comentario> ComentariosLista { get; set; }
         public ICollection<EntradaCategoria> CategoriasLink { get; set; }
+        public ICollection<Archivo> ArchivosLink { get; set; }
 
     }
 }

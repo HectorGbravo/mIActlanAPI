@@ -24,5 +24,8 @@ namespace MiactlanAPI.Context
         public DbSet<Like> Likes { get; set; }
         public DbSet<Comentario> Comentarios { get; set; }
         public DbSet<EntradaCategoria> EntradaCategorias { get; set; }
+        public DbSet<CategoriaArchivo> CategoriaArchivos { get; set; }
+        public DbSet<Archivo> Archivos { get; set; }
+        public DbSet<ArchivoCategoriaArchivo> ArchivoCategoriaArchivos { get; set; }
     }
 }

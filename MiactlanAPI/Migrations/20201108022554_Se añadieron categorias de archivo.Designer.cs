@@ -4,14 +4,16 @@ using MiactlanAPI.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MiactlanAPI.Migrations
 {
     [DbContext(typeof(MiactlanDbContext))]
-    partial class MiactlanDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201108022554_Se añadieron categorias de archivo")]
+    partial class Seañadieroncategoriasdearchivo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,42 +28,19 @@ namespace MiactlanAPI.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("IdCategoriaArchivo")
+                        .HasColumnType("int");
+
                     b.Property<int>("IdEntrada")
                         .HasColumnType("int");
 
-                    b.Property<string>("MimeType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UrlArchivo")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("IdArchivo");
+
+                    b.HasIndex("IdCategoriaArchivo");
 
                     b.HasIndex("IdEntrada");
 
                     b.ToTable("Archivos");
-                });
-
-            modelBuilder.Entity("MiactlanAPI.Entities.ArchivoCategoriaArchivo", b =>
-                {
-                    b.Property<int>("IdArchivoCategoriaArchivo")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("IdArchivo")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdCategoriaArchivo")
-                        .HasColumnType("int");
-
-                    b.HasKey("IdArchivoCategoriaArchivo");
-
-                    b.HasIndex("IdArchivo");
-
-                    b.HasIndex("IdCategoriaArchivo");
-
-                    b.ToTable("ArchivoCategoriaArchivos");
                 });
 
             modelBuilder.Entity("MiactlanAPI.Entities.Categoria", b =>
@@ -485,24 +464,15 @@ namespace MiactlanAPI.Migrations
 
             modelBuilder.Entity("MiactlanAPI.Entities.Archivo", b =>
                 {
+                    b.HasOne("MiactlanAPI.Entities.CategoriaArchivo", "CategoriaArchivo")
+                        .WithMany("ArchivosList")
+                        .HasForeignKey("IdCategoriaArchivo")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("MiactlanAPI.Entities.Entrada", "Entrada")
                         .WithMany("ArchivosLink")
                         .HasForeignKey("IdEntrada")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("MiactlanAPI.Entities.ArchivoCategoriaArchivo", b =>
-                {
-                    b.HasOne("MiactlanAPI.Entities.Archivo", "Archivo")
-                        .WithMany("CategoriasLink")
-                        .HasForeignKey("IdArchivo")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MiactlanAPI.Entities.CategoriaArchivo", "CategoriaArchivo")
-                        .WithMany("ArchivosLink")
-                        .HasForeignKey("IdCategoriaArchivo")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

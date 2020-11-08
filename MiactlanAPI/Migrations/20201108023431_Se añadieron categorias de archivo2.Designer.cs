@@ -4,14 +4,16 @@ using MiactlanAPI.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MiactlanAPI.Migrations
 {
     [DbContext(typeof(MiactlanDbContext))]
-    partial class MiactlanDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201108023431_Se añadieron categorias de archivo2")]
+    partial class Seañadieroncategoriasdearchivo2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,9 +30,6 @@ namespace MiactlanAPI.Migrations
 
                     b.Property<int>("IdEntrada")
                         .HasColumnType("int");
-
-                    b.Property<string>("MimeType")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UrlArchivo")
                         .HasColumnType("nvarchar(max)");

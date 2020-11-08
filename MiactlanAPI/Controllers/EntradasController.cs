@@ -296,6 +296,49 @@ namespace MiactlanAPI.Controllers
                     blobStorageService.DeleteBlobData(filePath);
                     negative = true;
                 }
+
+                Archivo archivo = new Archivo()
+                {
+                    IdEntrada = id,
+                    UrlArchivo = filePath,
+                    MimeType = mimeType
+                };
+
+                _context.Archivos.Add(archivo);
+
+                await _context.SaveChangesAsync();
+
+                var customVisionClient = new HttpClient();
+                customVisionClient.DefaultRequestHeaders.Add("Prediction-Key", "fa249ba3cc844f2287c23e5bf874d4ac");
+
+                var uriCustomVision = "https://southcentralus.api.cognitive.microsoft.com/customvision/v3.0/Prediction/85352c53-ff84-4fd0-b3ff-b6212f5257c3/classify/iterations/mIActlanCV/url";
+
+                CustomVisionRequest customVisionRequest = new CustomVisionRequest();
+                customVisionRequest.Url = filePath;
+                var jsonStringCV = JsonConvert.SerializeObject(customVisionRequest);
+
+                HttpResponseMessage responseCustom;
+
+                responseCustom = await customVisionClient.PostAsync(uriCustomVision, new StringContent(jsonStringCV, Encoding.UTF8, "application/json"));
+                var resultCustom = await responseCustom.Content.ReadAsStringAsync();
+                var resultadoCV = JsonConvert.DeserializeObject<CustomVisionResponse>(resultCustom);
+                foreach(Prediction prediction in resultadoCV.predictions)
+                {
+                    if (prediction.probability >= 0.9)
+                    {
+                        var categoria = await _context.CategoriaArchivos.Where(x => x.CategoriaTagId == prediction.tagId).FirstOrDefaultAsync();
+                        if (categoria != null)
+                        {
+                            ArchivoCategoriaArchivo archivoCategoriaArchivo = new ArchivoCategoriaArchivo()
+                            {
+                                IdArchivo = archivo.IdArchivo,
+                                IdCategoriaArchivo = categoria.IdCategoriaArchivo
+                            };
+                            _context.ArchivoCategoriaArchivos.Add(archivoCategoriaArchivo);
+                            await _context.SaveChangesAsync();
+                        }
+                    }
+                }
             }
 
             if ( negative == true )
